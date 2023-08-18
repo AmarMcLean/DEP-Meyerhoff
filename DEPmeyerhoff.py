@@ -9,53 +9,101 @@ import openpyxl
 class Excel:
     def __init__(self, file_path):
         self.path = file_path
-        self.variables = []
-        self.cohorts = []
-        self.first_name = []
-        self.last_name = []
 
         # Opens the Excel Sheet
         sheet = openpyxl.load_workbook(file_path)
+        self.inactive_sheet = sheet
         self.sheet = sheet.active
 
-        # Puts all the variables (Everything in first row) into an array
-        for x in range(self.sheet.max_column):
-            self.variables.append((self.sheet.cell(row=1, column=x+1)).value)
+        # Find number of columns and rows
+        self.columns = self.sheet.max_column
+        self.rows = self.sheet.max_row
 
-        # Puts all the cohorts into an array
-        for x in range(len(self.variables)):
-            if self.variables[x].lower() == 'cohort':
-                for y in range(self.sheet.max_row):
-                    self.cohorts.append((self.sheet.cell(row=y+2, column=x+1)).value)
+    def prompt(self):
+        user_input = input(
+            'What would you like to do?\n\t1. Add to Cohort\n\t2. Edit Cohort\n\t3. Display Cohort\n Input: ')
+        if user_input == '1':
+            self.add_to_cohort()
+        elif user_input == '2':
+            self.edit_cohort()
+        elif user_input == '3':
+            self.display_cohort()
 
-        # Puts all the last names into an array
-        for x in range(len(self.variables)):
-            if self.variables[x].lower() == 'last name':
-                for y in range(self.sheet.max_row):
-                    self.last_name.append((self.sheet.cell(row=y+2, column=x+1)).value)
-
-        # Puts all the first names into an array
-        for x in range(len(self.variables)):
-            if self.variables[x].lower() == 'first name':
-                for y in range(self.sheet.max_row):
-                    self.first_name.append((self.sheet.cell(row=y+2, column=x+1)).value)
-
-    def add_cohort(self):
-        user_input = input("Would you like to add to an existing cohort(y/n)? ")
-        if user_input.lower() == 'y':
-            first_name = input("What is their first name? ").lower()
-            last_name = input("What is their last name? ").lower()
-            cohort = input("What is their cohort? ").lower()
-            for x in range(len(self.cohorts)):
-                if (first_name == self.first_name[x].lower()) & (last_name == self.last_name[x].lower()) & (
-                        cohort == self.cohorts[x]):
-                    print("Yippee")
-
-    def edit_cohort(self):
-        print(f'{self.path}')
+    def add_to_cohort(self):
+        return self
 
     def search_cohort(self):
-        print(f'{self.path}')
+        cont = True
+        variables = {}
+
+        # Find variables to represent each cohort
+        print('Which variable would you like to use as an identifier?')
+        for x in range(1, self.columns+1):
+            var = self.sheet.cell(row=1, column=x).value
+            print(f'\t{x}. {var}')
+            variables[x] = [var, False, '']
+
+        # Choose the specific variable
+        while cont:
+            variables[int(input('Variable number: '))][1] = True
+            if input('Another(y/n)? ').lower() == 'n':
+                cont = False
+
+        # Ask for values of each specified variable
+        for x in variables:
+            if variables[x][1]:
+                variables[x][2] = input(f'What is their {self.sheet.cell(row=1, column=int(x)).value}? ').lower()
+
+        # Find the row number
+        possible_row = []
+        for y in range(2, self.rows+1):
+            wrong = False
+            for i in variables:
+                if variables[i][1] & (variables[i][0] == self.sheet.cell(row=1, column=i).value) & (
+                        variables[i][2] != str(self.sheet.cell(row=y, column=i).value).lower()):
+                    wrong = True
+                    break
+            if not wrong:
+                print('found')
+                possible_row.append(y)
+
+        return possible_row
+
+    def edit_cohort(self):
+        val = self.search_cohort()
+        # Change cohort's values
+        print('Which variable would you like change?')
+        for x in range(1, self.columns + 1):
+            var = self.sheet.cell(row=1, column=x).value
+            print(f'\t{x}. {var}')
+
+        # Choose the specific variable
+        cont = True
+        while cont:
+            variable = input('Choose number or type \'none\': ').lower()
+            if variable == 'none':
+                cont = False
+            else:
+                self.sheet.cell(row=val[0], column=int(variable)).value = input('New value: ')
+
+        self.inactive_sheet.save(self.path)
+        self.prompt()
+
+    def display_cohort(self):
+        val = self.search_cohort()
+        # Display the cohort's values
+        for y in val:
+            for x in range(1, self.columns+1):
+                print(f'{self.sheet.cell(row=1, column=x).value}:{self.sheet.cell(row=y, column=x).value}', end='   ')
+            print('\n')
+
+        self.prompt()
+
+    def create_sheet(self):
+        print(self)
+
+    def save_sheet(self):
+        self.inactive_sheet.save(self.path)
 
     def __del__(self):
         # self.sheet.close()
@@ -65,4 +113,4 @@ class Excel:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     excel_sheet = Excel('big_cheese.xlsx')
-    excel_sheet.add_cohort()
+    excel_sheet.prompt()
