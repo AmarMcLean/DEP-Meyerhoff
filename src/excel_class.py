@@ -1,10 +1,5 @@
-# Meyerhoff Scholars Program Data Entry Portal
-# Authored by Amar McLean; SC04296
+# excel_class.py
 import openpyxl
-
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 class Excel:
     def __init__(self, file_path):
