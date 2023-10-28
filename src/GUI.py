@@ -1,4 +1,6 @@
 # GUI.py
+# Meyerhoff Data Entry Portal
+# Authored by Amar McLean
 from tkinter import *
 from tkinter import filedialog
 import pandas as pd
