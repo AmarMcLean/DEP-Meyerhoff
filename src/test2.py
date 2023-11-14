@@ -1,41 +1,41 @@
 import tkinter as tk
-from tkinter import ttk
-import pandas as pd
-from pandastable import Table
+from pandastable import Table, TableModel
 
 
-def display_excel_file():
-    file_path = file_entry.get()
-    try:
-        df = pd.read_excel(file_path)
-        display_table(df)
-    except Exception as e:
-        error_label.config(text=f"Error: {str(e)}")
+class MyTableApp:
+    def __init__(self, root, data):
+        self.root = root
+        self.frame = tk.Frame(root)
+        self.frame.pack(fill='both', expand=True)
+        self.table = Table(self.frame, dataframe=data,
+                           showtoolbar=True, showstatusbar=True)
+        self.table.show()
+        self.add_tooltips()
+
+    def add_tooltips(self):
+        for col_idx, col_name in enumerate(self.table.model.df.columns):
+            header = self.table.header[column = col_idx, row = 0]
+            tooltip_text = "Description for {}".format(col_name)  # Add your descriptions here
+            self.create_tooltip(header, tooltip_text)
+
+    def create_tooltip(self, widget, text):
+        tooltip = tk.Toplevel(self.root)
+        tooltip.wm_overrideredirect(True)
+        tooltip.wm_geometry(f"+{self.root.winfo_pointerx()}+{self.root.winfo_pointery() + 20}")
+
+        label = tk.Label(tooltip, text=text, justify='left', background='#ffffe0', relief='solid', borderwidth=1)
+        label.pack(ipadx=1)
+
+        def leave(event):
+            tooltip.destroy()
+
+        widget.bind("<Enter>", lambda event: tooltip.lift())
+        widget.bind("<Leave>", lambda event: leave(event))
+        widget.bind("<Motion>", lambda event: tooltip.wm_geometry(f"+{event.x_root}+{event.y_root + 20}"))
 
 
-def display_table(dataframe):
-    if hasattr(root, 'table_frame'):
-        root.table_frame.destroy()
-
-    root.table_frame = ttk.Frame(root)
-    root.table_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-
-    table = Table(root.table_frame, dataframe=dataframe, showtoolbar=True, showstatusbar=True)
-    table.show()
-
-
-root = tk.Tk()
-root.title("Excel Viewer")
-
-file_label = ttk.Label(root, text="Enter Excel File Path:")
-file_label.pack(pady=10)
-file_entry = ttk.Entry(root)
-file_entry.pack(pady=10)
-
-display_button = ttk.Button(root, text="Display Excel File", command=display_excel_file)
-display_button.pack(pady=10)
-
-error_label = ttk.Label(root, text="", foreground="red")
-error_label.pack()
-
-root.mainloop()
+if __name__ == "__main__":
+    data = {'Column1': [1, 2, 3], 'Column2': ['A', 'B', 'C']}
+    root = tk.Tk()
+    app = MyTableApp(root, data)
+    root.mainloop()

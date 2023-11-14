@@ -13,6 +13,7 @@ root.state("zoomed")
 root.geometry("1920x1080")
 root.colors = ["#F8F4E3", "#D4CDC3", "#D5D0CD", "#A2A392", "#9A998C"]
 root.df = None
+root.pt = None
 checkboxes_view = []
 checkboxes_split = []
 searchbars = []
@@ -53,9 +54,9 @@ def load_click():
         root.df.name = root.file_path.split('/')[-1].split('.')[0]
 
         # Create a PandasTable
-        pt = Table(canvasBot, dataframe=root.df)
-        pt.show()
-        pt.redraw()
+        root.pt = Table(canvasBot, dataframe=root.df)
+        root.pt.show()
+        root.pt.redraw()
 
         checkbox_font = ("Helvetica", 20)
         btnEntry.config(state="normal")
@@ -237,7 +238,7 @@ def entry_click():
     my_canvas.create_window((0,0), window=frame, anchor="nw")
 
     # Make add button
-    btn_add = Button(frame, text="Add", padx=45, pady=5, bg=root.colors[1], command=add_click)
+    btn_add = Button(frame, text="Add", padx=45, pady=5, bg=root.colors[1], command=lambda: add_click(entries))
     num_col = 0
 
     if entries:
@@ -252,16 +253,43 @@ def entry_click():
         label.grid(row=num_col, column=0)
         entry.grid(row=num_col, column=1)
         checkbox.grid(row=num_col, column=2)
-        entries.append([entry, checkbox])
+        entries.append([entry, checkbox, var, col])
 
         num_col += 1
 
     btn_add.grid(row=num_col, column=1)
 
 
-def add_click():
-    # Might have to update and redraw table?
-    None
+def add_click(elements):
+    # Find rows that match the selected search criteria
+    selected_rows = root.df.copy()
+
+    for info in elements:
+        searchbar, checkbox, value, name = info
+        column_name = name
+
+        # Only include the condition if the checkbox is checked
+        if value == 1:
+            selected_rows = selected_rows.query(f"{column_name} == '{searchbar.get()}'")
+
+    # If there are no rows matching the selected criteria, display an error message
+    if selected_rows.empty:
+        print("No matching rows found.")
+        return
+
+    # Iterate through the entries to update the selected row
+    for info in elements:
+        searchbar, checkbox, value, name = info
+        column_name = name
+
+        # Only update the column value if the checkbox is unchecked and a value is entered
+        if value.get() == 0 and searchbar.get():
+            # Update the original DataFrame with the modified values
+            root.df.at[selected_rows.index[0], column_name] = searchbar.get()
+
+    # Redraw the PandasTable with the updated DataFrame
+    root.pt.show()
+    root.pt.redraw()
 
 
 # Create Top Canvas
