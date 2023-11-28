@@ -1,6 +1,7 @@
 # GUI.py
 # Meyerhoff Data Entry Portal
 # Authored by Amar McLean
+# https://ttkthemes.readthedocs.io/en/latest/themes.html#adapta
 from tkinter import *
 from tkinter import filedialog
 import pandas as pd
@@ -69,7 +70,7 @@ def load_click():
             searchbars.clear()
 
         for col in root.df.columns:
-            var = IntVar()
+            var = IntVar(value=1)
             checkbox = Checkbutton(top_row_frame, bg=root.colors[2], text=col, variable=var, onvalue=1, offvalue=0,
                                    font=checkbox_font)
             checkboxes_view.append([checkbox, var])
