@@ -5,21 +5,24 @@
 from tkinter import *
 from tkinter import filedialog
 import pandas as pd
-from pandastable import Table
-
+from pandastable import Table, TableModel
 
 root = Tk()
 root.title("Data Entry Portal")
 root.state("zoomed")
 root.geometry("1920x1080")
 root.colors = ["#F8F4E3", "#D4CDC3", "#D5D0CD", "#A2A392", "#9A998C"]
+root.file_path = None
 root.df = None
 root.pt = None
 checkboxes_view = []
 checkboxes_split = []
 searchbars = []
 entries = []
-root.file_path = None
+root.pt1 = None
+root.file_path2 = None
+root.df2 = None
+root.pt2 = None
 
 root.configure(bg=root.colors[0])
 
@@ -41,9 +44,41 @@ def file_click():
         btnCreate.grid_forget()
         top_row_frame.grid_forget()
         btnReformat.config(state="normal")
-    btnLoad.grid(row=0, column=0)
-    btnSave.grid(row=1, column=0)
+    btn1.grid(row=0, column=0)
+    btn2.grid(row=1, column=0)
+    btnLoad.grid(row=0, column=1)
+    btnSave.grid(row=1, column=1)
     btnFile.config(state="disabled")
+
+
+def btn1_click():
+    btn1.config(state="disabled")
+    if btn2.cget("state") == "disabled":
+        canvasBot1.grid_forget()
+        canvasBot2.grid_forget()
+        btnLoad2.grid_forget()
+        btn2.config(state="normal")
+    # Puts bot canvas onto grid
+    canvasBot.pack_propagate(False)
+    canvasBot.grid_propagate(False)
+    canvasBot.grid(row=2, column=0, padx=10, pady=10, columnspan=4)
+
+
+def btn2_click():
+    btn2.config(state="disabled")
+    if btn1.cget("state") == "disabled":
+        canvasBot.grid_forget()
+        btn1.config(state="normal")
+    # Puts bot canvas onto grid
+    canvasBot1.pack_propagate(False)
+    canvasBot1.grid_propagate(False)
+    canvasBot.pack_propagate(False)
+    canvasBot.grid_propagate(False)
+    canvasBot2.pack_propagate(False)
+    canvasBot2.grid_propagate(False)
+    canvasBot1.grid(row=2, column=0, padx=5, pady=10, columnspan=2)
+    canvasBot2.grid(row=2, column=2, padx=5, pady=10, columnspan=2)
+    btnLoad2.grid(row=0, column=2)
 
 
 def load_click():
@@ -59,6 +94,10 @@ def load_click():
         root.pt.show()
         root.pt.redraw()
 
+        root.pt1 = Table(canvasBot1, dataframe=root.df)
+        root.pt1.show()
+        root.pt1.redraw()
+
         checkbox_font = ("Helvetica", 20)
         btnEntry.config(state="normal")
 
@@ -69,11 +108,13 @@ def load_click():
         if searchbars:
             searchbars.clear()
 
-        for col in root.df.columns:
+        for i, col in enumerate(root.df.columns):
             var = IntVar(value=1)
             checkbox = Checkbutton(top_row_frame, bg=root.colors[2], text=col, variable=var, onvalue=1, offvalue=0,
                                    font=checkbox_font)
-            checkboxes_view.append([checkbox, var])
+            box_list = [checkbox, var]
+            checkboxes_view.append(box_list)
+            checkbox.config(command=lambda index=i: checkbox_view_click(index))
 
         for col in root.df.columns:
             var = IntVar()
@@ -85,6 +126,20 @@ def load_click():
             searchbar = Entry(top_row_frame_2, bg=root.colors[2], font=checkbox_font)
             searchbar.insert(0, col)
             searchbars.append(searchbar)
+
+
+def load_click2():
+    root.file_path2 = filedialog.askopenfilename(initialdir="/Documents", title="Select an Excel File")
+
+    if root.file_path2:
+        # Load the data from the Excel file
+        root.df2 = pd.read_excel(root.file_path2)
+        root.df2.name = root.file_path2.split('/')[-1].split('.')[0]
+
+        # Create a PandasTable
+        root.pt2 = Table(canvasBot2, dataframe=root.df2)
+        root.pt2.show()
+        root.pt2.redraw()
 
 
 def save_click():
@@ -167,6 +222,21 @@ def view_click():
     btnSplit.config(state="normal")
 
 
+def checkbox_view_click(index):
+    column_name = checkboxes_split[index][0]['text']
+
+    # Get the value of the checkbox (1 for checked, 0 for unchecked)
+    checkbox_value = checkboxes_split[index][1].get()
+    print(column_name)
+
+    if checkbox_value == 0:
+        # Filter out the rows where the column value matches the checkbox name
+        None
+
+    root.pt.show()
+    root.pt.redraw()
+
+
 def split_click():
     btnSplit.config(state="disabled")
     btnCreate.grid(row=0, column=10, rowspan=2)
@@ -236,7 +306,7 @@ def entry_click():
     # Make Second Frame
     frame = Frame(my_canvas)
 
-    my_canvas.create_window((0,0), window=frame, anchor="nw")
+    my_canvas.create_window((0, 0), window=frame, anchor="nw")
 
     # Make add button
     btn_add = Button(frame, text="Add", padx=45, pady=5, bg=root.colors[1], command=lambda: add_click(entries))
@@ -303,12 +373,22 @@ canvasBot = Canvas(root, width=1900, height=600, bg=root.colors[1])
 canvasBot.pack_propagate(False)
 canvasBot.grid_propagate(False)
 
+canvasBot1 = Canvas(root, width=950, height=600, bg=root.colors[1])
+canvasBot1.pack_propagate(False)
+canvasBot1.grid_propagate(False)
+canvasBot2 = Canvas(root, width=950, height=600, bg=root.colors[1])
+canvasBot2.pack_propagate(False)
+canvasBot2.grid_propagate(False)
+
 # Create Entry Window
 
 # Creates File and its buttons
 btnFile = Button(root, text="File", padx=60, pady=10, bg=root.colors[1], command=file_click)
 btnLoad = Button(canvasTop, text="Load", width=20, height=11, bg=root.colors[2], command=load_click)
 btnSave = Button(canvasTop, text="Save", width=20, height=11, bg=root.colors[2], command=save_click)
+btnLoad2 = Button(canvasTop, text="Load", width=20, height=11, bg=root.colors[2], command=load_click2)
+btn1 = Button(canvasTop, text="1", width=20, height=11, bg=root.colors[2], command=btn1_click)
+btn2 = Button(canvasTop, text="2", width=20, height=11, bg=root.colors[2], command=btn2_click)
 frameFile = LabelFrame(root, padx=800, pady=20, fg='#E4E6EB', bg=root.colors[2])
 
 # Creates Search and its entries
@@ -335,8 +415,6 @@ btnEntry.config(state="disabled")
 # Puts top canvas onto grid
 canvasTop.grid(row=1, column=0, padx=10, pady=10, columnspan=4)
 
-# Puts bot canvas onto grid
-canvasBot.grid(row=2, column=0, padx=10, pady=10, columnspan=4)
-
 file_click()
+btn1_click()
 root.mainloop()
