@@ -159,6 +159,8 @@ def save_click():
 def search_click():
     # Disable file features
     if btnFile.cget("state") == "disabled":
+        btn1.grid_forget()
+        btn2.grid_forget()
         btnLoad.grid_forget()
         btnSave.grid_forget()
         btnFile.config(state="normal")
@@ -173,13 +175,17 @@ def search_click():
 
     top_row_frame_2.grid(row=0, column=0, padx=10, pady=10)
 
-    total_items = len(searchbars)
-    num_rows = (total_items + 3) // 4  # Round up to the nearest integer
-    num_columns = (total_items + num_rows - 1) // num_rows
-    for i, searchbar in enumerate(searchbars):
-        row = i // num_columns  # Calculate the row based on the index
-        column = i % num_columns  # Calculate the column based on the index
-        searchbar.grid(row=row, column=column)
+    searchLabel.grid(row=0, column=0, padx=5, pady=10)
+    searchBox.grid(row=0, column=1, padx=5, pady=10)
+    btnFind.grid(row=0, column=2, padx=10, pady=10)
+
+    #total_items = len(searchbars)
+    #num_rows = (total_items + 3) // 4  # Round up to the nearest integer
+    #num_columns = (total_items + num_rows - 1) // num_rows
+    #for i, searchbar in enumerate(searchbars):
+    #    row = i // num_columns  # Calculate the row based on the index
+    #    column = i % num_columns  # Calculate the column based on the index
+    #    searchbar.grid(row=row, column=column)
 
 
 #################################################
@@ -190,6 +196,8 @@ def search_click():
 def reformat_click():
     # Disable file features
     if btnFile.cget("state") == "disabled":
+        btn1.grid_forget()
+        btn2.grid_forget()
         btnLoad.grid_forget()
         btnSave.grid_forget()
         btnFile.config(state="normal")
@@ -393,7 +401,12 @@ frameFile = LabelFrame(root, padx=800, pady=20, fg='#E4E6EB', bg=root.colors[2])
 
 # Creates Search and its entries
 btnSearch = Button(root, text="Search", padx=60, pady=10, bg=root.colors[1], command=search_click)
+
 top_row_frame_2 = Frame(canvasTop, bg=root.colors[1])
+searchLabel = Label(top_row_frame_2, text="Search:", padx=5, pady=10, bg=root.colors[1])
+searchBox = Entry(top_row_frame_2, width=20,  bg=root.colors[2])
+btnFind = Button(top_row_frame_2, text="Search", padx=60, pady=10, bg=root.colors[1])
+
 
 # Creates Reformat and its buttons
 btnReformat = Button(root, text="Reformat", padx=60, pady=10, bg=root.colors[1], command=reformat_click)
