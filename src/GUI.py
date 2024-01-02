@@ -10,7 +10,6 @@ from pandastable import Table, TableModel
 root = Tk()
 root.title("Data Entry Portal")
 root.state("zoomed")
-root.geometry("1920x1080")
 root.colors = ["#000000", "#FFFFFF", "#fdb515"]
 # root.colors = ["#F8F4E3", "#D4CDC3", "#D5D0CD", "#A2A392", "#9A998C"]
 root.file_path = None
@@ -24,6 +23,13 @@ root.pt1 = None
 root.file_path2 = None
 root.df2 = None
 root.pt2 = None
+
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+window_width = int(screen_width * 0.8)
+window_height = int(screen_height * 0.8)
+root.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
+
 
 root.configure(bg=root.colors[1])
 

@@ -4,6 +4,7 @@ File:
 - To load file click "load" (It is the leftmost "load" if you have selected "2")
 - To save file click "save"
 - To have a second file loaded, currently for viewing purposes only, click "2" then "load" (rightmost)
+- To remove the second file from view click "1"
 
 Search:
 Enter the desired keyword into the box and click search.
@@ -35,3 +36,5 @@ That being said, this version is just plain white for usability.
 Adding and Deleting:
 To Add or Delete a row, right-click the left-hand index column, then click "Add Row(s)".
 To Add or Delete a column, right-click the top attribute row, and click on "column" then "Add".
+
+Be wary of doing anything important in this version as it is not final and all kinks aren't yet ironed out.
