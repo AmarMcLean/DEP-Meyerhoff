@@ -31,3 +31,7 @@ Finally, click Add to add the unchecked attributes to the row
 
 The current look is temporary, although very different from before, as I'm experimenting with the aesthetic.
 That being said, this version is just plain white for usability.
+
+Adding and Deleting:
+To Add or Delete a row, right-click the left-hand index column, then click "Add Row(s)".
+To Add or Delete a column, right-click the top attribute row, and click on "column" then "Add".
