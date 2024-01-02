@@ -44,6 +44,8 @@ def file_click():
         btnCreate.grid_forget()
         top_row_frame.grid_forget()
         btnReformat.config(state="normal")
+    if btn2.cget("state") == "disabled":
+        btnLoad2.grid(row=0, column=2)
     btn1.grid(row=0, column=0)
     btn2.grid(row=1, column=0)
     btnLoad.grid(row=0, column=1)
@@ -163,6 +165,7 @@ def search_click():
         btn2.grid_forget()
         btnLoad.grid_forget()
         btnSave.grid_forget()
+        btnLoad2.grid_forget()
         btnFile.config(state="normal")
     # Disable reformat features
     if btnReformat.cget("state") == "disabled":
@@ -188,6 +191,19 @@ def search_click():
     #    searchbar.grid(row=row, column=column)
 
 
+def search_data():
+    query = searchBox.get().lower()
+    filtered_df = root.df[root.df.apply(lambda row: any(query in str(cell).lower() for cell in row), axis=1)]
+
+    if btn1.cget("state") == "disabled":
+        root.pt.model.df = filtered_df
+        root.pt.redraw()
+
+    else:
+        root.pt1.model.df = filtered_df
+        root.pt1.redraw()
+
+
 #################################################
 #
 # Reformat and it's two buttons
@@ -200,6 +216,7 @@ def reformat_click():
         btn2.grid_forget()
         btnLoad.grid_forget()
         btnSave.grid_forget()
+        btnLoad2.grid_forget()
         btnFile.config(state="normal")
     # Disable search features
     if btnSearch.cget("state") == "disabled":
@@ -332,7 +349,7 @@ def entry_click():
         label.grid(row=num_col, column=0)
         entry.grid(row=num_col, column=1)
         checkbox.grid(row=num_col, column=2)
-        entries.append([entry, checkbox, var, col])
+        entries.append([entry, var, col])
 
         num_col += 1
 
@@ -344,27 +361,24 @@ def add_click(elements):
     selected_rows = root.df.copy()
 
     for info in elements:
-        searchbar, checkbox, value, name = info
-        column_name = name
+        searchbar, value, name = info
+        new = True
 
         # Only include the condition if the checkbox is checked
-        if value == 1:
-            selected_rows = selected_rows.query(f"{column_name} == '{searchbar.get()}'")
-
-    # If there are no rows matching the selected criteria, display an error message
-    if selected_rows.empty:
-        print("No matching rows found.")
-        return
+        if value.get() == 1:
+            query = searchbar.get().lower()
+            selected_rows = selected_rows[
+                selected_rows.apply(lambda row: any(query in str(cell).lower() for cell in row), axis=1)]
+            new = False
 
     # Iterate through the entries to update the selected row
     for info in elements:
-        searchbar, checkbox, value, name = info
-        column_name = name
+        searchbar, value, name = info
 
         # Only update the column value if the checkbox is unchecked and a value is entered
         if value.get() == 0 and searchbar.get():
             # Update the original DataFrame with the modified values
-            root.df.at[selected_rows.index[0], column_name] = searchbar.get()
+            root.df.at[selected_rows.index[0], name] = searchbar.get()
 
     # Redraw the PandasTable with the updated DataFrame
     root.pt.show()
@@ -404,8 +418,8 @@ btnSearch = Button(root, text="Search", padx=60, pady=10, bg=root.colors[1], com
 
 top_row_frame_2 = Frame(canvasTop, bg=root.colors[1])
 searchLabel = Label(top_row_frame_2, text="Search:", padx=5, pady=10, bg=root.colors[1])
-searchBox = Entry(top_row_frame_2, width=20,  bg=root.colors[2])
-btnFind = Button(top_row_frame_2, text="Search", padx=60, pady=10, bg=root.colors[1])
+searchBox = Entry(top_row_frame_2, width=20, font=("Helvetica", 20), bg=root.colors[2])
+btnFind = Button(top_row_frame_2, text="Search", padx=60, pady=10, bg=root.colors[1], command=search_data)
 
 
 # Creates Reformat and its buttons
