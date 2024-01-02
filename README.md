@@ -38,3 +38,5 @@ To Add or Delete a row, right-click the left-hand index column, then click "Add 
 To Add or Delete a column, right-click the top attribute row, and click on "column" then "Add".
 
 Be wary of doing anything important in this version as it is not final and all kinks aren't yet ironed out.
+
+When recreating distributable use 'pyinstaller --onefile --hidden-import pandastable ../src/GUI.py' from distributables folder

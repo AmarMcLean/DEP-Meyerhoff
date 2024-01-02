@@ -4,8 +4,8 @@
 # https://ttkthemes.readthedocs.io/en/latest/themes.html#adapta
 from tkinter import *
 from tkinter import filedialog, ttk
-import pandas as pd
-from pandastable import Table, TableModel
+from pandas import read_excel
+from pandastable import Table
 
 root = Tk()
 root.title("Data Entry Portal")
@@ -87,7 +87,7 @@ def load_click():
 
     if root.file_path:
         # Load the data from the Excel file
-        root.df = pd.read_excel(root.file_path)
+        root.df = read_excel(root.file_path)
         root.df.name = root.file_path.split('/')[-1].split('.')[0]
 
         # Create a PandasTable
@@ -129,7 +129,7 @@ def load_click2():
 
     if root.file_path2:
         # Load the data from the Excel file
-        root.df2 = pd.read_excel(root.file_path2)
+        root.df2 = read_excel(root.file_path2)
         root.df2.name = root.file_path2.split('/')[-1].split('.')[0]
 
         # Create a PandasTable
