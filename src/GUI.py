@@ -30,7 +30,6 @@ window_width = int(screen_width * 0.8)
 window_height = int(screen_height * 0.8)
 root.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
-
 root.configure(bg=root.colors[1])
 
 
@@ -111,7 +110,7 @@ def load_click():
 
         for i, col in enumerate(root.df.columns):
             var = IntVar(value=1)
-            checkbox = Checkbutton(top_row_frame, bg=root.colors[2], text=col, variable=var, onvalue=1, offvalue=0,
+            checkbox = Checkbutton(top_row_frame, bg=root.colors[1], text=col, variable=var, onvalue=1, offvalue=0,
                                    font=checkbox_font)
             box_list = [checkbox, var]
             checkboxes_view.append(box_list)
@@ -119,7 +118,7 @@ def load_click():
 
         for col in root.df.columns:
             var = IntVar()
-            checkbox = Checkbutton(top_row_frame, bg=root.colors[2], text=col, variable=var, onvalue=1, offvalue=0,
+            checkbox = Checkbutton(top_row_frame, bg=root.colors[1], text=col, variable=var, onvalue=1, offvalue=0,
                                    font=checkbox_font)
             checkboxes_split.append([checkbox, var])
 
@@ -296,7 +295,7 @@ def entry_click():
 
     for col in root.df.columns:
         label = Label(frame, text=col, padx=10, pady=10)
-        entry = Entry(frame, bg=root.colors[2])
+        entry = Entry(frame, bg=root.colors[1])
         var = IntVar()
         checkbox = Checkbutton(frame, variable=var, onvalue=1, offvalue=0)
 
@@ -386,7 +385,7 @@ btnFind = Button(fSearch, text="Search", padx=60, pady=10, bg=root.colors[1], co
 btnView = Button(fFormat, text="View", width=20, height=11, bg=root.colors[1], command=view_click)
 btnSplit = Button(fFormat, text="Split", width=20, height=11, bg=root.colors[1], command=split_click)
 btnCreate = Button(fFormat, text="Create", width=20, height=22, bg=root.colors[1], command=create_click)
-top_row_frame = Frame(fFormat, bg=root.colors[2])
+top_row_frame = Frame(fFormat, bg=root.colors[1])
 
 # Creates Entry Button
 btnEntry = Button(fEntry, text="Entry", padx=60, pady=10, command=entry_click)
